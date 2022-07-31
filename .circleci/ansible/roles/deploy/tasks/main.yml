@@ -9,16 +9,22 @@
     dest: ~/backend-app
 
 - name: "Installing Node Dependencies"
-  shell: |
-    cd ~/backend-app
-    npm i
+  become: true
+  apt: 
+    name: npm
+    state: latest
+    update_cache: yes
+  # shell: |
+  #   cd ~/backend-app
+  #   npm i
 
 - name: "Executing node app with pm2 "
-  become: true
+  # become: true
   shell: |
     cd ~/backend-app/dist
     pm2 stop default
     pm2 start -f main.js 
+
   register: execute_node
 
 - name: "print message"
