@@ -36,8 +36,10 @@ commands:
        - run:
           name: Install Node.js 13
           command: |
-            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            sudo apt install -y nodejs  
+            sudo apt-get update -y && curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt-get install -y nodejs 
+            sudo npm install --global n
+            sudo n 13.8.0 
 
    destroy-environment:
       description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -66,7 +68,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure http://kvdb.io/6GhrFtjsKARm6hNMDrYHHS/migration_<< parameters.Workflow_ID >>)
+            SUCCESS=$(curl --insecure http://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
@@ -139,9 +141,9 @@ jobs:
              npm install
              npm test
       - notify_on_failure
-      # - save_cache:
-      #     paths: [backend/node_modules]
-      #     key: backend-deps
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-deps
             
   scan-frontend:
     docker:
@@ -240,6 +242,9 @@ jobs:
     steps:
       - checkout
       - install_awscli
+      - install_nodejs
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
@@ -251,7 +256,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              curl http://kvdb.io/6GhrFtjsKARm6hNMDrYHHS/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
+              curl http://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
             fi 
       - destroy-environment
       - revert-migrations 
