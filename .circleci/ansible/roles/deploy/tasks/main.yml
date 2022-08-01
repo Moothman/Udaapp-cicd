@@ -9,14 +9,19 @@
     dest: /home/ubuntu/backend-app
 
 - name: "Installing Node Dependencies"
-  become: true
-  apt: 
-    name: npm
-    state: latest
-    update_cache: true
-  # shell: |
-  #   cd /home/ubuntu/backend-app
-  #   npm i
+  # become: true
+  # apt: 
+  #   name: npm
+  #   state: latest
+  #   update_cache: true
+  shell: |
+    cd /home/ubuntu/backend-app
+    npm install
+# - name: "Create .env"
+#   become: true
+#   shell: |
+#       cd  /home/ubuntu/backend-app
+#       cp .env.prod .env
 
 - name: "Executing node app with pm2 "
   become: true

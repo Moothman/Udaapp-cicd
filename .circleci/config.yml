@@ -258,6 +258,7 @@ jobs:
             then
               curl http://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
             fi 
+      - notify_on_failure      
       - destroy-environment
       - revert-migrations 
 #      # Here's where you will add some code to rollback on failure      
@@ -295,7 +296,7 @@ jobs:
             npm run build
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             
-      
+      - notify_on_failure
       - destroy-environment
       - revert-migrations 
  
@@ -304,6 +305,20 @@ jobs:
   deploy-backend:
     docker:
       - image: cimg/base:stable
+        environment:
+         NODE_ENV: "production"
+         VERSION: "1"
+         ENVIRONMENT: "production"
+         TYPEORM_CONNECTION: "TYPEORM_CONNECTION"
+         TYPEORM_HOST: "TYPEORM_HOST"
+         TYPEORM_USERNAME: "TYPEORM_USERNAME"
+         TYPEORM_PASSWORD: "TYPEORM_PASSWORD"
+         TYPEORM_DATABASE: "TYPEORM_DATABASE"
+         TYPEORM_PORT: "TYPEORM_PORT"
+         TYPEORM_MIGRATIONS_DIR: "./migrations"
+         TYPEORM_ENTITIES: "./modules/domain/**/*.entity{.ts,.js}"
+         TYPEORM_MIGRATIONS: "./migrations/*{.ts,.js}"
+
     steps:
       - checkout
       - install_awscli
@@ -337,20 +352,26 @@ jobs:
       #       echo "Contents  of the inventory.txt file is -------"
       #       cat inventory.txt
       #       ansible-playbook -i inventory.txt deploy-backend.yml
+
+      #  tar -czvf artifact.tar.gz dist/* package* 
+
+      #       cd ..
+      #       cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
       - run:
           name: Install dependencies
           command: |
-            cd backend
-            npm install
+            sudo apt -y install tar gzip curl
+
       - run:
           name: Package backend
           command: |
             cd backend
+            npm install
             npm run build
-            tar -czvf artifact.tar.gz dist/* package* 
-
             cd ..
-            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            tar -C backend -czvf artifact.tar.gz .
+            cp artifact.tar.gz .circleci/ansible/roles/deploy/files
+           
       - run:
           name: Deploy backend
           command: |
@@ -363,8 +384,9 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
 
-      # - destroy-environment
-      # - revert-migrations  
+      - notify_on_failure
+      - destroy-environment
+      - revert-migrations  
 #       # Here's where you will add some code to rollback on failure  
 
 #   smoke-test:
