@@ -253,7 +253,7 @@ jobs:
       - run:
           name: Send migration results to kvdb.io
           command: |
-            if grep -q "has been executed successfully." ~/backend/migrations_dump.txt
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
               echo "post result to kvdb.io..."
               curl https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7} -d 1
@@ -314,9 +314,9 @@ jobs:
          TYPEORM_PASSWORD: "TYPEORM_PASSWORD"
          TYPEORM_DATABASE: "TYPEORM_DATABASE"
          TYPEORM_PORT: "TYPEORM_PORT"
-         TYPEORM_MIGRATIONS_DIR: "./migrations"
-         TYPEORM_ENTITIES: "./modules/domain/**/*.entity{.ts,.js}"
-         TYPEORM_MIGRATIONS: "./migrations/*{.ts,.js}"
+         TYPEORM_MIGRATIONS_DIR: "./dis/migrations"
+         TYPEORM_ENTITIES: "./dis/modules/domain/**/*.entity{.ts,.js}"
+         TYPEORM_MIGRATIONS: "./dis/migrations/*{.ts,.js}"
 
     steps:
       - checkout
