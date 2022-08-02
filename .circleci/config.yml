@@ -393,27 +393,7 @@ jobs:
               exit 1
             fi
       - destroy-environment
-      - revert-migrations
-      
-    # steps:
-    #   # Checkout code from git
-    #   - run:
-    #       name: Install dependencies
-    #       command: |
-    #         # your code here
-    #   - run:
-    #       name: Get backend url
-    #       command: |
-    #         # your code here
-    #   - run:
-    #       name: Backend smoke test.
-    #       command: |
-    #         # your code here
-    #   - run:
-    #       name: Frontend smoke test.
-    #       command: |
-    #         # your code here
-#       # Here's where you will add some code to rollback on failure  
+      - revert-migrations 
 
   cloudfront-update:
     docker:
