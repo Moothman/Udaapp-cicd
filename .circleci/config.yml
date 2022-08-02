@@ -314,9 +314,9 @@ jobs:
          TYPEORM_PASSWORD: "TYPEORM_PASSWORD"
          TYPEORM_DATABASE: "TYPEORM_DATABASE"
          TYPEORM_PORT: "TYPEORM_PORT"
-         TYPEORM_MIGRATIONS_DIR: "./dis/migrations"
-         TYPEORM_ENTITIES: "./dis/modules/domain/**/*.entity{.ts,.js}"
-         TYPEORM_MIGRATIONS: "./dis/migrations/*{.ts,.js}"
+         TYPEORM_MIGRATIONS_DIR: "./migrations"
+         TYPEORM_ENTITIES: "./modules/domain/**/*.entity{.ts,.js}"
+         TYPEORM_MIGRATIONS: "./migrations/*{.ts}"
 
     steps:
       - checkout
@@ -442,29 +442,29 @@ jobs:
       - destroy-environment
       - revert-migrations
   
-  # cleanup:
-  #   docker:
-  #     - image: cimg/base:stable
-  #   steps:
-  #     - checkout
-  #     - install_awscli
-  #     - run:
-  #         name: Remove old stacks and files
-  #         command: |
-  #           export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-  #           --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-  #           echo Stack names: "${STACKS[@]}"
-  #           export OldWorkflowID=$(curl --insecure https://kvdb.io/etYxk93C9YFCuUCYvQdbm/old_workflowid)
-  #           echo Old Workflow ID: $OldWorkflowID  
-  #           if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-  #           then
-  #             echo "-------------Cleaning up old resources-------------"
-  #             aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-  #             aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-  #             aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-  #           else
-  #             echo "-------------Nothing to Cleanup-------------"
-  #           fi
+  cleanup:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - install_awscli
+      - run:
+          name: Remove old stacks and files
+          command: |
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}"
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflowid)
+            echo Old Workflow ID: $OldWorkflowID  
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              echo "-------------Cleaning up old resources-------------"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+            else
+              echo "-------------Nothing to Cleanup-------------"
+            fi
 
   notify_on_success:        
     docker:
@@ -512,5 +512,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+      - cleanup:
+          requires: [cloudfront-update]
