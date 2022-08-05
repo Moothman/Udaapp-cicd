@@ -36,7 +36,7 @@ Resources:
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: udacity
-      ImageId: ami-0ddf424f81ddb0720
+      ImageId: ami-0d70546e43a941d70
       # ami-0d70546e43a941d70
       # ami-0ddf424f81ddb0720    #ami-068663a3c619dd892 
       Tags:

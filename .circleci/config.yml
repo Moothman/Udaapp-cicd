@@ -36,8 +36,9 @@ commands:
        - run:
           name: Install Node.js 13
           command: |
-            sudo apt-get update -y && curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-            sudo apt-get install -y nodejs 
+            sudo apt update -y && curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs 
+            
             sudo npm install --global n
             sudo n 13.8.0 
 
@@ -494,3 +495,8 @@ workflows:
           requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
+
+    # sudo apt-get update -y && curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            # sudo apt-get install -y nodejs 
+            # sudo npm install --global n
+            # sudo n 13.8.0 
