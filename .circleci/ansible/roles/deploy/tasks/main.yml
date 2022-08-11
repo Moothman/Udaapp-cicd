@@ -1,4 +1,4 @@
-- name: "Create Backend app Directory"
+- name: "Create Backend Directory"
   file:
     path: /home/ubuntu/backend
     state: directory
@@ -10,18 +10,9 @@
 
 - name: "Installing Node Dependencies"
   become: true
-  # apt: 
-  #   name: npm
-  #   state: latest
-  #   update_cache: true
   shell: |
     cd /home/ubuntu/backend
     npm install
-# - name: "Create .env"
-#   become: true
-#   shell: |
-#       cd  /home/ubuntu/backend-app
-#       cp .env.prod .env
 
 - name: "Executing node app with pm2 "
   become: true
@@ -30,13 +21,24 @@
     pm2 stop default
     pm2 start -f main.js 
 
-#   register: execute_node
+  register: execute_node
 
-# - name: "print message"
-#   debug:
-#     msg: "{{ execute_node_stdout_lines }}"
+- name: "print message"
+  debug:
+    msg: "{{ execute_node_stdout_lines }}"
 
-- name: "configure pm2 to start as a service"
-  shell: |
-   sudo su -c "env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu"
-   pm2 save 
+# - name: "configure pm2 to start as a service"
+#   shell: |
+#    sudo su -c "env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu"
+#    pm2 save 
+
+# apt: 
+  #   name: npm
+  #   state: latest
+  #   update_cache: true
+
+# - name: "Create .env"
+#   become: true
+#   shell: |
+#       cd  /home/ubuntu/backend-app
+#       cp .env.prod .env
