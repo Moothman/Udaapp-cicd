@@ -36,7 +36,7 @@
 #   debug:
 #     msg: "{{ execute_node_stdout_lines }}"
 
-# - name: "configure pm2 to start as a service"
-#   shell: |
-#    sudo su -c "env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu"
-#    pm2 save 
+- name: "configure pm2 to start as a service"
+  shell: |
+   sudo su -c "env PATH=$PATH:/usr/local/bin/ pm2 startup systemd -u ubuntu --hp /home/ubuntu"
+   pm2 save 
