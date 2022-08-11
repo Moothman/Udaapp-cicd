@@ -21,11 +21,11 @@
     pm2 stop default
     pm2 start -f main.js 
 
-  register: execute_node
+#   register: execute_node
 
-- name: "print message"
-  debug:
-    msg: "{{ execute_node_stdout_lines }}"
+# - name: "print message"
+#   debug:
+#     msg: "{{ execute_node_stdout_lines }}"
 
 # - name: "configure pm2 to start as a service"
 #   shell: |
