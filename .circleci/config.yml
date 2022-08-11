@@ -231,9 +231,9 @@ jobs:
           TYPEORM_PASSWORD: $TYPEORM_PASSWORD
           TYPEORM_DATABASE: $TYPEORM_DATABASE
           TYPEORM_PORT: $TYPEORM_PORT
-          TYPEORM_MIGRATIONS_DIR: $TYPEORM_MIGRATIONS_DIR
-          TYPEORM_ENTITIES: $TYPEORM_ENTITIES
-          TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+          TYPEORM_MIGRATIONS_DIR: "./migrations"
+          TYPEORM_ENTITIES: "./modules/domain/**/*.entity{.ts,.js}"
+          TYPEORM_MIGRATIONS: "./migrations/*.ts"
     steps:
       - checkout
       - install_ansible
@@ -329,10 +329,9 @@ jobs:
          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
          TYPEORM_DATABASE: $TYPEORM_DATABASE
          TYPEORM_PORT: $TYPEORM_PORT
-         TYPEORM_MIGRATIONS_DIR: $TYPEORM_MIGRATIONS_DIR
-         TYPEORM_ENTITIES: $TYPEORM_ENTITIES
-         TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
-
+         TYPEORM_MIGRATIONS_DIR: "./migrations"
+         TYPEORM_ENTITIES: "./modules/domain/**/*.entity{.ts,.js}"
+         TYPEORM_MIGRATIONS: "./migrations/*.ts"
     steps:
       - checkout
       - install_awscli
@@ -348,7 +347,6 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt -y install tar gzip curl
-
       - run:
           name: Package backend
           command: |
@@ -357,15 +355,14 @@ jobs:
             npm run build
             cd ..
             tar -C backend -czvf artifact.tar.gz .
-            cp artifact.tar.gz .circleci/ansible/roles/deploy/files
-           
+            cp artifact.tar.gz .circleci/ansible/roles/deploy/files      
       - run:
           name: Deploy backend
           command: |
 
             export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-            export TYPEORM_MIGRATIONS=./migrations/*{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
             
             cd .circleci/ansible
             cat inventory.txt
